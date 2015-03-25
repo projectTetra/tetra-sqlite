@@ -2,7 +2,7 @@
 #ifndef TETRA_SQLITE_SQLITE
 #define TETRA_SQLITE_SQLITE
 
-#include "sqlite3.h"
+#include <sqlite3.h>
 
 #include <vector>
 #include <stdexcept>
