@@ -4,7 +4,7 @@ namespace sqlite
 {
 
 template <typename Functor>
-void SQLite::StepUntilDone( sqlite3_stmt* stmt, Functor fctn )
+void SQLite::stepUntilDone( sqlite3_stmt* stmt, Functor fctn )
 {
   auto exit = atExit( [=]()
                       {
@@ -18,21 +18,21 @@ void SQLite::StepUntilDone( sqlite3_stmt* stmt, Functor fctn )
 }
 
 template <typename Functor>
-void SQLite::StepUntilDone( const std::string& query, Functor fctn )
+void SQLite::stepUntilDone( const std::string& query, Functor fctn )
 {
   // the statement automatically finalizes when it goes out of scope
-  auto stmt = PrepareStatement( query );
+  auto stmt = prepareStatement( query );
 
-  StepUntilDone( stmt.get(), fctn );
+  stepUntilDone( stmt.get(), fctn );
 }
 
-inline void SQLite::ExecuteSQL( sqlite3_stmt* stmt )
+inline void SQLite::executeSQL( sqlite3_stmt* stmt )
 {
-  ExecuteSQL( stmt, ThrowIfNotDone );
+  executeSQL( stmt, throwIfNotDone );
 }
 
 template <typename Functor>
-void SQLite::ExecuteSQL( sqlite3_stmt* stmt, Functor fctn )
+void SQLite::executeSQL( sqlite3_stmt* stmt, Functor fctn )
 {
   auto res = sqlite3_step( stmt );
   auto exit = atExit( [&]()
@@ -44,17 +44,17 @@ void SQLite::ExecuteSQL( sqlite3_stmt* stmt, Functor fctn )
 }
 
 template <class... Params>
-void SQLite::BindSQL( sqlite3_stmt* stmt, Params... params )
+void SQLite::bindSQL( sqlite3_stmt* stmt, Params... params )
 {
-  BindSQL_Impl( stmt, 1, params... );
+  bindSQL_Impl( stmt, 1, params... );
 }
 
 template <class Param, class... Params>
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, Param p,
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index, Param p,
                            Params... params )
 {
-  BindSQL_Impl( stmt, index, p );
-  BindSQL_Impl( stmt, index + 1, params... );
+  bindSQL_Impl( stmt, index, p );
+  bindSQL_Impl( stmt, index + 1, params... );
 }
 
 }

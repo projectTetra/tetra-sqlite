@@ -9,7 +9,7 @@ using namespace tetra::sqlite;
 
 void ClearDatabaseSchema( SQLite& db )
 {
-	db.DropTables(
+	db.dropTables(
 	{
 		"Entity_Table",
 		"Family_Table",
@@ -21,7 +21,7 @@ void ClearDatabaseSchema( SQLite& db )
 
 void CreateDatabaseSchema( SQLite& db )
 {
-	db.ExecuteSQL(
+	db.executeSQL(
 		"CREATE TABLE Entity_Table ("
 			"EntityID INTEGER PRIMARY KEY AUTOINCREMENT,"
 			"Test TEXT NOT NULL,"
@@ -30,14 +30,14 @@ void CreateDatabaseSchema( SQLite& db )
 			");"
 		);
 
-	db.ExecuteSQL(
+	db.executeSQL(
 		"CREATE TABLE Family_Table ("
 			"FamilyID INTEGER PRIMARY KEY AUTOINCREMENT,"
 			"FamilyName TEXT NOT NULL"
 			");"
 		);
 
-	db.ExecuteSQL(
+	db.executeSQL(
 		"CREATE TABLE FamilyMember_Table("
 			"PkID INTEGER PRIMARY KEY AUTOINCREMENT,"
 			"FamilyID INTEGER NOT NULL,"
@@ -47,7 +47,7 @@ void CreateDatabaseSchema( SQLite& db )
 			");"
 		);
 
-	db.ExecuteSQL(
+	db.executeSQL(
 		"CREATE TABLE FamilyComponent_Table("
 			"PkID INTEGER PRIMARY KEY AUTOINCREMENT,"
 			"FamilyID INTEGER NOT NULL,"
@@ -56,7 +56,7 @@ void CreateDatabaseSchema( SQLite& db )
 			");"
 		);
 
-	db.ExecuteSQL(
+	db.executeSQL(
 		"CREATE TABLE EntityComponent_Table("
 			"PkID INTEGER PRIMARY KEY AUTOINCREMENT,"
 			"EntityID INTEGER NOT NULL,"
@@ -73,27 +73,27 @@ int main()
 	{
 		auto sqlite = SQLite { "first.db" };
 
-		cout << sqlite.TableExists( "Entity_Table" ) << endl;
+		cout << sqlite.tableExists( "Entity_Table" ) << endl;
 		ClearDatabaseSchema( sqlite );
 		CreateDatabaseSchema( sqlite );
 
-		auto stmt = sqlite.PrepareStatement(
+		auto stmt = sqlite.prepareStatement(
 			"INSERT INTO Entity_Table VALUES (NULL, @Test, @Test2, @Test3);"
 			);
 
 		for (int i = 0; i < 10; i++)
 		{
-			sqlite.BindSQL(
+			sqlite.bindSQL(
 				stmt.get(),
 				to_string( i ) + " test",
 				i,
 				Blob { &i, sizeof(int) }
 				);
 
-			sqlite.ExecuteSQL( stmt.get() );
+			sqlite.executeSQL( stmt.get() );
 		}
 
-		sqlite.StepUntilDone(
+		sqlite.stepUntilDone(
 			"SELECT Test, Test2, Test3 FROM Entity_Table;",
 			[&]( sqlite3_stmt* select )
 			{

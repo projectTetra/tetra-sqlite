@@ -38,14 +38,14 @@ SQLite::~SQLite()
   m_context_ = nullptr;
 }
 
-bool SQLite::TableExists( const std::string& tableName )
+bool SQLite::tableExists( const std::string& tableName )
 {
   auto tableExistsQuery =
     string{"SELECT count(*) FROM sqlite_master WHERE "
            "type='table' AND name='" +
            tableName + "';"};
 
-  auto stmt = PrepareStatement( tableExistsQuery );
+  auto stmt = prepareStatement( tableExistsQuery );
 
   auto res = sqlite3_step( stmt.get() );
   if ( res != SQLITE_ROW )
@@ -57,7 +57,7 @@ bool SQLite::TableExists( const std::string& tableName )
   return exists > 0;
 }
 
-void SQLite::ExecuteSQL( const std::string& stmt )
+void SQLite::executeSQL( const std::string& stmt )
 {
   auto res = sqlite3_exec( m_context_, stmt.c_str(), nullptr, nullptr,
                            nullptr );
@@ -68,22 +68,22 @@ void SQLite::ExecuteSQL( const std::string& stmt )
   }
 }
 
-void SQLite::DropTable( const std::string& tableName )
+void SQLite::dropTable( const std::string& tableName )
 {
   auto dropCmd = string{"DROP TABLE IF EXISTS "} + tableName;
 
-  ExecuteSQL( dropCmd );
+  executeSQL( dropCmd );
 }
 
-void SQLite::DropTables( const std::vector<std::string>& tables )
+void SQLite::dropTables( const std::vector<std::string>& tables )
 {
   for ( const auto& tableName : tables )
   {
-    DropTable( tableName );
+    dropTable( tableName );
   }
 }
 
-SQLite::SafeStmt SQLite::PrepareStatement( const std::string& stmt )
+SQLite::SafeStmt SQLite::prepareStatement( const std::string& stmt )
 {
   sqlite3_stmt* pStmt{nullptr};
 
@@ -101,7 +101,7 @@ SQLite::SafeStmt SQLite::PrepareStatement( const std::string& stmt )
   return SafeStmt{pStmt};
 }
 
-void SQLite::ThrowIfNotDone( int result )
+void SQLite::throwIfNotDone( int result )
 {
   if ( result != SQLITE_DONE )
   {
@@ -111,7 +111,7 @@ void SQLite::ThrowIfNotDone( int result )
 
 
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, int i )
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index, int i )
 {
   if ( sqlite3_bind_int( stmt, index, i ) != SQLITE_OK )
   {
@@ -120,7 +120,7 @@ void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, int i )
   }
 }
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index,
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index,
                            std::string str )
 {
   auto res = sqlite3_bind_text( stmt, index, str.c_str(), -1,
@@ -133,7 +133,7 @@ void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index,
   }
 }
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index,
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index,
                            const char* str )
 {
   auto res =
@@ -145,7 +145,7 @@ void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index,
   }
 }
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, double d )
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index, double d )
 {
   if ( sqlite3_bind_double( stmt, index, d ) != SQLITE_OK )
   {
@@ -154,7 +154,7 @@ void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, double d )
   }
 }
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, float f )
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index, float f )
 {
   auto res =
     sqlite3_bind_double( stmt, index, static_cast<double>( f ) );
@@ -166,7 +166,7 @@ void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, float f )
   }
 }
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index,
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index,
                            std::int64_t i )
 {
   if ( sqlite3_bind_int64( stmt, index, i ) != SQLITE_OK )
@@ -176,7 +176,7 @@ void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index,
   }
 }
 
-void SQLite::BindSQL_Impl( sqlite3_stmt* stmt, int index, Blob blb )
+void SQLite::bindSQL_Impl( sqlite3_stmt* stmt, int index, Blob blb )
 {
   auto res = sqlite3_bind_blob( stmt, index, blb.m_dataPtr_,
                                 static_cast<int>( blb.m_dataLength_ ),
