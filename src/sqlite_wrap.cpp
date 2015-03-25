@@ -1,4 +1,4 @@
-#include "sqlite_wrap.hpp"
+#include <tetra/sqlite/sqlite.hpp>
 
 using namespace std;
 
@@ -6,13 +6,6 @@ namespace tetra
 {
 namespace sqlite
 {
-
-ScopeExit::ScopeExit( std::function<void()> atExit )
-  : m_atExit{atExit}
-{
-}
-
-ScopeExit::~ScopeExit() { m_atExit(); }
 
 Blob::Blob( const void* ptr, size_t len )
   : m_dataPtr_{ptr}, m_dataLength_{len}

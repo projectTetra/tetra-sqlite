@@ -6,10 +6,10 @@ namespace sqlite
 template <typename Functor>
 void SQLite::StepUntilDone( sqlite3_stmt* stmt, Functor fctn )
 {
-  ScopeExit atExit{[=]
-                   {
-                     sqlite3_reset( stmt );
-                   }};
+  auto exit = atExit( [=]()
+                      {
+                        sqlite3_reset( stmt );
+                      } );
 
   while ( sqlite3_step( stmt ) == SQLITE_ROW )
   {
@@ -35,10 +35,10 @@ template <typename Functor>
 void SQLite::ExecuteSQL( sqlite3_stmt* stmt, Functor fctn )
 {
   auto res = sqlite3_step( stmt );
-  ScopeExit atExit{[&]
-                   {
-                     sqlite3_reset( stmt );
-                   }};
+  auto exit = atExit( [&]()
+                      {
+                        sqlite3_reset( stmt );
+                      } );
 
   fctn( res );
 }

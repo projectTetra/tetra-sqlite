@@ -1,6 +1,7 @@
+#include <tetra/sqlite/sqlite.hpp>
+
 #include <iostream>
 #include <string>
-#include "sqlite_wrap.hpp"
 
 using namespace std;
 using namespace tetra;
@@ -8,10 +9,10 @@ using namespace tetra::sqlite;
 
 void ClearDatabaseSchema( SQLite& db )
 {
-	db.DropTables( 
-	{ 
-		"Entity_Table", 
-		"Family_Table", 
+	db.DropTables(
+	{
+		"Entity_Table",
+		"Family_Table",
 		"FamilyMember_Table",
 		"FamilyComponent_Table",
 		"EntityComponent_Table"
@@ -82,18 +83,18 @@ int main()
 
 		for (int i = 0; i < 10; i++)
 		{
-			sqlite.BindSQL( 
-				stmt.get(), 
-				to_string( i ) + " test", 
-				i, 
-				Blob { &i, sizeof(int) } 
+			sqlite.BindSQL(
+				stmt.get(),
+				to_string( i ) + " test",
+				i,
+				Blob { &i, sizeof(int) }
 				);
 
 			sqlite.ExecuteSQL( stmt.get() );
 		}
 
-		sqlite.StepUntilDone( 
-			"SELECT Test, Test2, Test3 FROM Entity_Table;", 
+		sqlite.StepUntilDone(
+			"SELECT Test, Test2, Test3 FROM Entity_Table;",
 			[&]( sqlite3_stmt* select )
 			{
 				cout << "Test: " << sqlite3_column_text( select, 0 ) << "\t";
