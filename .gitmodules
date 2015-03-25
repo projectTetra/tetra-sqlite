@@ -1,0 +1,9 @@
+[submodule "depends/tetra-soil"]
+	path = depends/tetra-soil
+	url = git@github.com:projectTetra/tetra-soil.git
+[submodule "freetype2"]
+	path = freetype2
+	url = git://git.sv.nongnu.org/freetype/freetype2.git
+[submodule "depends/freetype2"]
+	path = depends/freetype2
+	url = git://git.sv.nongnu.org/freetype/freetype2.git
